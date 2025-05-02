@@ -10,7 +10,7 @@
 
 ### Fixed
 
-- `extensions.mlm` various fixes
+- `extensions.mlm` various fixes [#1556](https://github.com/stac-utils/pystac/pull/1556)
   - Fixed ResizeType typos `interpolation-nearest` and `interpolation-linear` 
   - Fixed displaying the correct property in error message for `ResultStructure.data_type` 
   - Fixed `ValueScaling.maximum` setter to pop when None is given 
