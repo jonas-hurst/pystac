@@ -229,10 +229,13 @@ class ModelBand:
         """
         Get or set the required name property of a ModelBand object
         """
-        return get_required(
-            self.properties.get(NAME_MODEL_BAND_OBJECT_PROP),
-            self,
-            NAME_MODEL_BAND_OBJECT_PROP,
+        return cast(
+            str,
+            get_required(
+                self.properties.get(NAME_MODEL_BAND_OBJECT_PROP),
+                self,
+                NAME_MODEL_BAND_OBJECT_PROP,
+            ),
         )
 
     @name.setter
@@ -326,10 +329,13 @@ class ProcessingExpression:
         """
         Get or set the required format property of this ProcessingExpression
         """
-        return get_required(
-            self.properties.get(FORMAT_PROCESSING_EXPRESSION_PROP),
-            self,
-            FORMAT_PROCESSING_EXPRESSION_PROP,
+        return cast(
+            str,
+            get_required(
+                self.properties.get(FORMAT_PROCESSING_EXPRESSION_PROP),
+                self,
+                FORMAT_PROCESSING_EXPRESSION_PROP,
+            ),
         )
 
     @format.setter
@@ -529,8 +535,13 @@ class ValueScaling:
         """
         Get or set the required type property of this ValueScaling object
         """
-        return get_required(
-            self.properties.get(TYPE_VALUE_SCALING_PROP), self, TYPE_VALUE_SCALING_PROP
+        return cast(
+            str,
+            get_required(
+                self.properties.get(TYPE_VALUE_SCALING_PROP),
+                self,
+                TYPE_VALUE_SCALING_PROP,
+            ),
         )
 
     @type.setter
@@ -741,10 +752,13 @@ class InputStructure:
         """
         Get or set the required data_type property of this InputStructure object
         """
-        return get_required(
-            self.properties.get(DATA_TYPE_INPUT_STRUCTURE_PROP),
-            self,
-            DATA_TYPE_INPUT_STRUCTURE_PROP,
+        return cast(
+            DataType,
+            get_required(
+                self.properties.get(DATA_TYPE_INPUT_STRUCTURE_PROP),
+                self,
+                DATA_TYPE_INPUT_STRUCTURE_PROP,
+            ),
         )
 
     @data_type.setter
@@ -890,8 +904,13 @@ class ModelInput:
         """
         Gets or sets the required name property of this ModelInput object
         """
-        return get_required(
-            self.properties.get(NAME_INPUT_OBJECT_PROP), self, NAME_INPUT_OBJECT_PROP
+        return cast(
+            str,
+            get_required(
+                self.properties.get(NAME_INPUT_OBJECT_PROP),
+                self,
+                NAME_INPUT_OBJECT_PROP,
+            ),
         )
 
     @name.setter
@@ -1095,10 +1114,13 @@ class ResultStructure:
         """
         Gets or sets the required data_type property of the ResultStructure object
         """
-        return get_required(
-            self.properties.get(DATA_TYPE_RESULT_STRUCTURE_PROP),
-            self,
-            DATA_TYPE_RESULT_STRUCTURE_PROP,
+        return cast(
+            DataType,
+            get_required(
+                self.properties.get(DATA_TYPE_RESULT_STRUCTURE_PROP),
+                self,
+                DATA_TYPE_RESULT_STRUCTURE_PROP,
+            ),
         )
 
     @data_type.setter
@@ -1217,8 +1239,9 @@ class ModelOutput:
         """
         Gets or sets the required name property of this ModelOutput object
         """
-        return get_required(
-            self.properties.get(NAME_RESULT_PROP), self, NAME_RESULT_PROP
+        return cast(
+            str,
+            get_required(self.properties.get(NAME_RESULT_PROP), self, NAME_RESULT_PROP),
         )
 
     @name.setter
@@ -1350,7 +1373,7 @@ class _ExcludedFromAssetProps(PropertiesExtension):
         Get or set the required (mlm) name property. It is named mlm_name in this
         context to not break convention and overwrite the extension name class property.
         """
-        return get_required(self.properties.get(NAME_PROP), self, NAME_PROP)
+        return cast(str, get_required(self.properties.get(NAME_PROP), self, NAME_PROP))
 
     @mlm_name.setter
     def mlm_name(self, v: str) -> None:
@@ -1409,8 +1432,11 @@ class _IncludedInAssetProps(PropertiesExtension):
         """
         Get or set the required architecture property
         """
-        return get_required(
-            self.properties.get(ARCHITECTURE_PROP), self, ARCHITECTURE_PROP
+        return cast(
+            str,
+            get_required(
+                self.properties.get(ARCHITECTURE_PROP), self, ARCHITECTURE_PROP
+            ),
         )
 
     @architecture.setter
@@ -1777,7 +1803,7 @@ class _AssetMLMExtension(ABC):
         """
         prop_value = self.properties.get(ARTIFACT_TYPE_ASSET_PROP)
         if isinstance(self.asset.roles, list) and "mlm:model" in self.asset.roles:
-            return get_required(prop_value, self, ARTIFACT_TYPE_ASSET_PROP)
+            return cast(str, get_required(prop_value, self, ARTIFACT_TYPE_ASSET_PROP))
         else:
             return prop_value
 
