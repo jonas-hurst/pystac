@@ -1,5 +1,6 @@
 [project]
 name = "pystac"
+version = "1.11"
 description = "Python library for working with the SpatioTemporal Asset Catalog (STAC) specification"
 readme = "README.md"
 authors = [
@@ -22,7 +23,6 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = ["python-dateutil>=2.7.0"]
-dynamic = ["version"]
 
 [project.optional-dependencies]
 jinja2 = ["jinja2<4.0"]
