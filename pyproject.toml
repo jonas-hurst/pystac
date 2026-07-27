@@ -32,7 +32,7 @@ dependencies = [
     "pystac-ext-item-assets",
     "pystac-ext-label",
     "pystac-ext-mgrs",
-    "pystac-ext-mlm",
+    "pystac-ext-mlm @ git+https://github.com/jonas-hurst/pystac.git@v1.15.1OWN#subdirectory=extensions/mlm",
     "pystac-ext-pointcloud",
     "pystac-ext-projection",
     "pystac-ext-raster",
