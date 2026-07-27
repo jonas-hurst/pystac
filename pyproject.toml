@@ -180,6 +180,9 @@ only-include = ["README.md", "LICENSE", "pystac"]
 [tool.hatch.build.targets.wheel]
 packages = ["pystac"]
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [tool.uv.sources]
 pystac-core = { workspace = true }
 pystac-ext-classification = { workspace = true }
