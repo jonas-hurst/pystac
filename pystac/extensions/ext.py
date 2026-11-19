@@ -14,6 +14,7 @@ from pystac import (
 )
 from pystac.extensions.classification import ClassificationExtension
 from pystac.extensions.datacube import DatacubeExtension
+from pystac.extensions.embeddings import EmbeddingsExtension
 from pystac.extensions.eo import EOExtension
 from pystac.extensions.file import FileExtension
 from pystac.extensions.grid import GridExtension
@@ -48,6 +49,7 @@ U = TypeVar("U", Asset, ItemAssetDefinition)
 EXTENSION_NAMES = Literal[
     "classification",
     "cube",
+    "embeddings",
     "eo",
     "file",
     "grid",
@@ -72,6 +74,7 @@ EXTENSION_NAMES = Literal[
 EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     ClassificationExtension.name: ClassificationExtension,
     DatacubeExtension.name: DatacubeExtension,
+    EmbeddingsExtension.name: EmbeddingsExtension,
     EOExtension.name: EOExtension,
     FileExtension.name: FileExtension,
     GridExtension.name: GridExtension,
@@ -227,6 +230,10 @@ class ItemExt:
     @property
     def cube(self) -> DatacubeExtension[Item]:
         return DatacubeExtension.ext(self.stac_object)
+
+    @property
+    def embeddings(self) -> EmbeddingsExtension[Item]:
+        return EmbeddingsExtension.ext(self.stac_object)
 
     @property
     def eo(self) -> EOExtension[Item]:
