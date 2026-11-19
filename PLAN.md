@@ -8,7 +8,8 @@
 - Depends on: none
 
 ## Slice 2: Item support for the remaining optional fields
-- [ ] Done
+- [x] Done
+- note: grid_id and quantization_method are validated as non-empty strings (and temporal_period against the ISO 8601 pattern), which is slightly broader than SPEC's parenthetical "(enum values and the positive-integer array constraints)" but consistent with the slice's "each validated on assignment"; no behavior against the v1.0.0 schema is altered.
 - Delivers: `ext.embeddings` on an `Item` also reads/writes `emb:chip_size` (`chip_size`), `emb:stride` (`stride`), `emb:grid_id` (`grid_id`), `emb:temporal_period` (`temporal_period`), `emb:quantization_method` (`quantization_method`), `emb:original_data_type` (`original_data_type`), each validated on assignment (positive-integer array constraints, data-type enum). Tests cover each field.
 - Check: `uv run pytest extensions/embeddings/tests`
 - Depends on: 1
