@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from typing import Any, Generic, Literal, TypeVar, cast
 
 import pystac
@@ -124,10 +125,10 @@ class EmbeddingsExtension(
     ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of a
-    :class:`~pystac.Item` (or later, a :class:`~pystac.Collection`,
-    :class:`~pystac.Asset`, or :class:`~pystac.ItemAssetDefinition`) with properties
-    from the :stac-ext:`Embeddings Extension <embeddings>`. This class is generic over
-    the type of STAC Object to be extended.
+    :class:`~pystac.Item`, :class:`~pystac.Collection`, :class:`~pystac.Asset`, or
+    :class:`~pystac.ItemAssetDefinition` with properties from the
+    :stac-ext:`Embeddings Extension <embeddings>`. This class is generic over the type
+    of STAC Object to be extended.
 
     To create a concrete instance of :class:`EmbeddingsExtension`, use the
     :meth:`EmbeddingsExtension.ext` method. For example:
@@ -254,8 +255,9 @@ class EmbeddingsExtension(
         """Extends the given STAC Object with properties from the
         :stac-ext:`Embeddings Extension <embeddings>`.
 
-        This extension can be applied to instances of :class:`~pystac.Item` or
-        :class:`~pystac.Collection`.
+        This extension can be applied to instances of :class:`~pystac.Item`,
+        :class:`~pystac.Collection`, :class:`~pystac.Asset`, or
+        :class:`~pystac.ItemAssetDefinition`.
 
         Raises:
 
@@ -267,6 +269,12 @@ class EmbeddingsExtension(
         elif isinstance(obj, pystac.Collection):
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(EmbeddingsExtension[T], CollectionEmbeddingsExtension(obj))
+        elif isinstance(obj, pystac.Asset):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return cast(EmbeddingsExtension[T], AssetEmbeddingsExtension(obj))
+        elif isinstance(obj, pystac.ItemAssetDefinition):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return cast(EmbeddingsExtension[T], ItemAssetsEmbeddingsExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -323,6 +331,62 @@ class CollectionEmbeddingsExtension(EmbeddingsExtension[pystac.Collection]):
 
     def __repr__(self) -> str:
         return f"<CollectionEmbeddingsExtension Collection id={self.collection.id}>"
+
+
+class AssetEmbeddingsExtension(EmbeddingsExtension[pystac.Asset]):
+    """A concrete implementation of :class:`EmbeddingsExtension` on an
+    :class:`~pystac.Asset` that extends the Asset fields to include properties defined
+    in the :stac-ext:`Embeddings Extension <embeddings>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`EmbeddingsExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    """
+
+    asset_href: str
+    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+
+    properties: dict[str, Any]
+    """The :class:`~pystac.Asset` fields, including extension properties."""
+
+    additional_read_properties: Iterable[dict[str, Any]] | None = None
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owning :class:`~pystac.Item`."""
+
+    def __init__(self, asset: pystac.Asset) -> None:
+        self.asset_href = asset.href
+        self.properties = asset.extra_fields
+        if asset.owner and isinstance(asset.owner, pystac.Item):
+            self.additional_read_properties = [asset.owner.properties]
+
+    def __repr__(self) -> str:
+        return f"<AssetEmbeddingsExtension Asset href={self.asset_href}>"
+
+
+class ItemAssetsEmbeddingsExtension(EmbeddingsExtension[pystac.ItemAssetDefinition]):
+    """A concrete implementation of :class:`EmbeddingsExtension` on an
+    :class:`~pystac.ItemAssetDefinition` that extends the Asset Definition fields to
+    include properties defined in the :stac-ext:`Embeddings Extension <embeddings>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`EmbeddingsExtension.ext` on an :class:`~pystac.ItemAssetDefinition` to
+    extend it.
+    """
+
+    properties: dict[str, Any]
+    """The :class:`~pystac.ItemAssetDefinition` fields, including extension
+    properties."""
+
+    asset_definition: pystac.ItemAssetDefinition
+    """The :class:`~pystac.ItemAssetDefinition` being extended."""
+
+    def __init__(self, item_asset: pystac.ItemAssetDefinition) -> None:
+        self.properties = item_asset.properties
+        self.asset_definition = item_asset
+
+    def __repr__(self) -> str:
+        return "<ItemAssetsEmbeddingsExtension AssetDefinition={}>".format(
+            self.asset_definition
+        )
 
 
 class SummariesEmbeddingsExtension(SummariesExtension):

@@ -367,6 +367,10 @@ class _AssetExt(_AssetsExt[U]):
         return DatacubeExtension.ext(self.stac_object)
 
     @property
+    def embeddings(self) -> EmbeddingsExtension[U]:
+        return EmbeddingsExtension.ext(self.stac_object)
+
+    @property
     def eo(self) -> EOExtension[U]:
         return EOExtension.ext(self.stac_object)
 

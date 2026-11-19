@@ -366,3 +366,139 @@ def test_summaries_adds_uri(collection: pystac.Collection) -> None:
 
     EmbeddingsExtension.summaries(collection, add_if_missing=True)
     assert EmbeddingsExtension.get_schema_uri() in collection.stac_extensions
+
+
+@pytest.fixture
+def item_with_asset() -> pystac.Item:
+    start = datetime(2023, 1, 1)
+    item = pystac.Item(
+        id="test-item", geometry=None, bbox=None, datetime=start, properties={}
+    )
+    EmbeddingsExtension.add_to(item)
+    asset = pystac.Asset(
+        href="https://example.org/data/embeddings.parquet",
+        media_type="application/vnd.apache.parquet",
+    )
+    item.add_asset("embeddings", asset)
+    return item
+
+
+@pytest.fixture
+def example_item() -> pystac.Item:
+    return pystac.Item.from_file(str(DATA_FILES / "item.json"))
+
+
+@pytest.fixture
+def item_asset_defn() -> pystac.ItemAssetDefinition:
+    return pystac.ItemAssetDefinition.create(
+        title="Chip embedding vectors",
+        description="Chip embedding vectors",
+        media_type="application/vnd.apache.parquet",
+        roles=["data", "embeddings"],
+    )
+
+
+def test_asset_ext_accessor(item_with_asset: pystac.Item) -> None:
+    ext = item_with_asset.assets["embeddings"].ext.embeddings
+    assert isinstance(ext, EmbeddingsExtension)
+
+
+def test_asset_all_fields(item_with_asset: pystac.Item) -> None:
+    asset = item_with_asset.assets["embeddings"]
+    ext = asset.ext.embeddings
+
+    ext.emb_type = "chip"
+    ext.dimensions = [768]
+    ext.chip_size = [16, 16]
+    ext.stride = [16, 16]
+    ext.grid_id = "MAJORTOM"
+    ext.temporal_period = "P1Y"
+    ext.quantization_method = "linear"
+    ext.original_data_type = "float32"
+
+    assert "chip" == ext.emb_type
+    assert [768] == ext.dimensions
+    assert [16, 16] == ext.chip_size
+    assert [16, 16] == ext.stride
+    assert "MAJORTOM" == ext.grid_id
+    assert "P1Y" == ext.temporal_period
+    assert "linear" == ext.quantization_method
+    assert "float32" == ext.original_data_type
+
+    assert "chip" == asset.extra_fields[TYPE_PROP]
+    assert [768] == asset.extra_fields[DIMENSIONS_PROP]
+    assert [16, 16] == asset.extra_fields[CHIP_SIZE_PROP]
+    assert [16, 16] == asset.extra_fields[STRIDE_PROP]
+    assert "MAJORTOM" == asset.extra_fields[GRID_ID_PROP]
+    assert "P1Y" == asset.extra_fields[TEMPORAL_PERIOD_PROP]
+    assert "linear" == asset.extra_fields[QUANTIZATION_METHOD_PROP]
+    assert "float32" == asset.extra_fields[ORIGINAL_DATA_TYPE_PROP]
+
+
+def test_asset_invalid_emb_type(item_with_asset: pystac.Item) -> None:
+    asset = item_with_asset.assets["embeddings"]
+    with pytest.raises(ValueError):
+        asset.ext.embeddings.emb_type = "not-a-valid-type"
+
+
+def test_asset_to_from_dict(item_with_asset: pystac.Item) -> None:
+    asset = item_with_asset.assets["embeddings"]
+    asset.ext.embeddings.emb_type = "chip"
+    asset.ext.embeddings.dimensions = [768]
+
+    d = item_with_asset.to_dict()
+    asset_dict = d["assets"]["embeddings"]
+    assert "chip" == asset_dict[TYPE_PROP]
+    assert [768] == asset_dict[DIMENSIONS_PROP]
+
+    item2 = pystac.Item.from_dict(d)
+    asset2 = item2.assets["embeddings"]
+    assert "chip" == asset2.ext.embeddings.emb_type
+    assert [768] == asset2.ext.embeddings.dimensions
+
+
+def test_item_asset_definition_ext_accessor(
+    item_asset_defn: pystac.ItemAssetDefinition,
+) -> None:
+    ext = item_asset_defn.ext.embeddings
+    assert isinstance(ext, EmbeddingsExtension)
+
+
+def test_item_asset_definition_all_fields(
+    item_asset_defn: pystac.ItemAssetDefinition,
+) -> None:
+    ext = item_asset_defn.ext.embeddings
+
+    ext.emb_type = "chip"
+    ext.dimensions = [768]
+    ext.chip_size = [16, 16]
+    ext.stride = [16, 16]
+    ext.grid_id = "MAJORTOM"
+    ext.temporal_period = "P1Y"
+    ext.quantization_method = "linear"
+    ext.original_data_type = "float32"
+
+    assert "chip" == ext.emb_type
+    assert [768] == ext.dimensions
+    assert [16, 16] == ext.chip_size
+    assert [16, 16] == ext.stride
+    assert "MAJORTOM" == ext.grid_id
+    assert "P1Y" == ext.temporal_period
+    assert "linear" == ext.quantization_method
+    assert "float32" == ext.original_data_type
+
+    assert "chip" == item_asset_defn.properties[TYPE_PROP]
+    assert [768] == item_asset_defn.properties[DIMENSIONS_PROP]
+    assert [16, 16] == item_asset_defn.properties[CHIP_SIZE_PROP]
+    assert [16, 16] == item_asset_defn.properties[STRIDE_PROP]
+    assert "MAJORTOM" == item_asset_defn.properties[GRID_ID_PROP]
+    assert "P1Y" == item_asset_defn.properties[TEMPORAL_PERIOD_PROP]
+    assert "linear" == item_asset_defn.properties[QUANTIZATION_METHOD_PROP]
+    assert "float32" == item_asset_defn.properties[ORIGINAL_DATA_TYPE_PROP]
+
+
+def test_example_item_asset_worked_example(example_item: pystac.Item) -> None:
+    asset = example_item.assets["embeddings"]
+    ext = asset.ext.embeddings
+    assert "chip" == ext.emb_type
+    assert [768] == ext.dimensions
