@@ -1,7 +1,8 @@
 # Plan
 
 ## Slice 1: Package scaffold + Item support for the two required fields
-- [ ] Done
+- [x] Done
+- note: uv.lock revision was lowered from 5 to 3 in the slice commit; `uv lock`/`uv lock --check` resolve cleanly with the current uv and produce no diff, so it is a cosmetic metadata change, not a reproducibility problem.
 - Delivers: `extensions/embeddings` becomes a registered uv workspace package (added to `[tool.uv.sources]` and `[tool.mypy] mypy_path`), with the vendored v1.0.0 JSON schema, a `pystac.extensions.embeddings` module exposing `EMBEDDINGS_EXTENSION_HOOKS`, `py.typed`, and a README. `ext.embeddings` on an `Item` reads/writes `emb:type` (`emb_type`) and `emb:dimensions` (`dimensions`) with validation. Tests set/get these on an Item, round-trip to dict, and assert an invalid `emb:type` raises `ValueError`.
 - Check: `uv run pytest extensions/embeddings/tests`
 - Depends on: none
