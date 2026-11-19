@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any, Generic, Literal, TypeVar, cast
 
 import pystac
@@ -20,9 +21,40 @@ PREFIX: str = "emb:"
 # Field names
 TYPE_PROP: str = PREFIX + "type"
 DIMENSIONS_PROP: str = PREFIX + "dimensions"
+CHIP_SIZE_PROP: str = PREFIX + "chip_size"
+STRIDE_PROP: str = PREFIX + "stride"
+GRID_ID_PROP: str = PREFIX + "grid_id"
+TEMPORAL_PERIOD_PROP: str = PREFIX + "temporal_period"
+QUANTIZATION_METHOD_PROP: str = PREFIX + "quantization_method"
+ORIGINAL_DATA_TYPE_PROP: str = PREFIX + "original_data_type"
 
 #: Valid values for the ``emb:type`` field.
 VALID_TYPES: tuple[str, ...] = ("pixel", "chip")
+
+#: Valid values for the ``emb:original_data_type`` field.
+VALID_ORIGINAL_DATA_TYPES: tuple[str, ...] = (
+    "int8",
+    "int16",
+    "int32",
+    "int64",
+    "uint8",
+    "uint16",
+    "uint32",
+    "uint64",
+    "float16",
+    "float32",
+    "float64",
+    "cint16",
+    "cint32",
+    "cfloat32",
+    "cfloat64",
+)
+
+#: Pattern for the ``emb:temporal_period`` ISO 8601 duration string, taken from the
+#: v1.0.0 JSON schema.
+TEMPORAL_PERIOD_PATTERN = re.compile(
+    r"^P(?!$)(\d+Y)?(\d+M)?(\d+W)?(\d+D)?(T(?=\d)(\d+H)?(\d+M)?(\d+(\.\d+)?S)?)?$"
+)
 
 
 def validated_type(v: str) -> str:
@@ -43,6 +75,42 @@ def validated_dimensions(v: list[int]) -> list[int]:
             raise ValueError(
                 "Invalid emb:dimensions: all values must be positive integers"
             )
+    return v
+
+
+def validated_positive_int_pair(v: list[int], prop_name: str) -> list[int]:
+    if not isinstance(v, list) or len(v) != 2:
+        raise ValueError(
+            f"Invalid {prop_name}: must be an array of two positive integers"
+        )
+    for i in v:
+        if isinstance(i, bool) or not isinstance(i, int) or i < 1:
+            raise ValueError(
+                f"Invalid {prop_name}: all values must be positive integers"
+            )
+    return v
+
+
+def validated_string(v: str, prop_name: str) -> str:
+    if not isinstance(v, str):
+        raise ValueError(f"Invalid {prop_name}: must be a string")
+    return v
+
+
+def validated_temporal_period(v: str) -> str:
+    if not isinstance(v, str) or not TEMPORAL_PERIOD_PATTERN.fullmatch(v):
+        raise ValueError(
+            f"Invalid {TEMPORAL_PERIOD_PROP}: {v!r} must be an ISO 8601 duration"
+        )
+    return v
+
+
+def validated_original_data_type(v: str) -> str:
+    if not isinstance(v, str) or v not in VALID_ORIGINAL_DATA_TYPES:
+        raise ValueError(
+            f"Invalid {ORIGINAL_DATA_TYPE_PROP}: {v!r} must be one of "
+            f"{', '.join(VALID_ORIGINAL_DATA_TYPES)}"
+        )
     return v
 
 
@@ -91,6 +159,87 @@ class EmbeddingsExtension(
     @dimensions.setter
     def dimensions(self, v: list[int]) -> None:
         self._set_property(DIMENSIONS_PROP, validated_dimensions(v), pop_if_none=False)
+
+    @property
+    def chip_size(self) -> list[int] | None:
+        """Get or sets the chip size of the embeddings.
+
+        An array of two positive integers representing ``[height, width]``.
+        """
+        return self._get_property(CHIP_SIZE_PROP, list[int])
+
+    @chip_size.setter
+    def chip_size(self, v: list[int]) -> None:
+        self._set_property(
+            CHIP_SIZE_PROP,
+            validated_positive_int_pair(v, CHIP_SIZE_PROP),
+            pop_if_none=False,
+        )
+
+    @property
+    def stride(self) -> list[int] | None:
+        """Get or sets the stride between neighbouring chips.
+
+        An array of two positive integers representing ``[row_stride, col_stride]``.
+        """
+        return self._get_property(STRIDE_PROP, list[int])
+
+    @stride.setter
+    def stride(self, v: list[int]) -> None:
+        self._set_property(
+            STRIDE_PROP, validated_positive_int_pair(v, STRIDE_PROP), pop_if_none=False
+        )
+
+    @property
+    def grid_id(self) -> str | None:
+        """Get or sets the grid system the chips are aligned to."""
+        return self._get_property(GRID_ID_PROP, str)
+
+    @grid_id.setter
+    def grid_id(self, v: str) -> None:
+        self._set_property(
+            GRID_ID_PROP, validated_string(v, GRID_ID_PROP), pop_if_none=False
+        )
+
+    @property
+    def temporal_period(self) -> str | None:
+        """Get or sets the temporal compositing period.
+
+        An ISO 8601 duration string (e.g. ``P1Y``, ``P3M``).
+        """
+        return self._get_property(TEMPORAL_PERIOD_PROP, str)
+
+    @temporal_period.setter
+    def temporal_period(self, v: str) -> None:
+        self._set_property(
+            TEMPORAL_PERIOD_PROP, validated_temporal_period(v), pop_if_none=False
+        )
+
+    @property
+    def quantization_method(self) -> str | None:
+        """Get or sets the quantization method (e.g. ``linear``)."""
+        return self._get_property(QUANTIZATION_METHOD_PROP, str)
+
+    @quantization_method.setter
+    def quantization_method(self, v: str) -> None:
+        self._set_property(
+            QUANTIZATION_METHOD_PROP,
+            validated_string(v, QUANTIZATION_METHOD_PROP),
+            pop_if_none=False,
+        )
+
+    @property
+    def original_data_type(self) -> str | None:
+        """Get or sets the data type of the embeddings before quantization."""
+        return self._get_property(ORIGINAL_DATA_TYPE_PROP, str)
+
+    @original_data_type.setter
+    def original_data_type(self, v: str) -> None:
+        self._set_property(
+            ORIGINAL_DATA_TYPE_PROP,
+            validated_original_data_type(v),
+            pop_if_none=False,
+        )
 
     @classmethod
     def get_schema_uri(cls) -> str:
