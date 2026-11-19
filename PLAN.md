@@ -22,7 +22,8 @@
 - Depends on: 2
 
 ## Slice 4: Asset + Item Asset Definition support
-- [ ] Done
+- [x] Done
+- note: On an `Asset`, an unset `emb:*` field reads by falling back to the owning Item's properties (via the base `PropertiesExtension.additional_read_properties`), consistent with the EO extension's asset pattern; setting a field on an asset never leaks to the item. Reading the worked-example Item's `embeddings` asset and setting fields on assets/ItemAssetDefinitions were exercised directly and behave correctly.
 - Delivers: `ext.embeddings` on an `Asset` and on an `ItemAssetDefinition` reads/writes all 8 fields. Adds the spec's example Item as a fixture and tests the worked-example values from the item's `embeddings` asset (`emb_type == "chip"`, `dimensions == [768]`). Confirms the workspace still lints, type-checks, and passes its core test suite.
 - Check: `uv run pytest extensions/embeddings/tests`
 - Depends on: 3
