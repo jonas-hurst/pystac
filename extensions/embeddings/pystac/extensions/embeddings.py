@@ -6,7 +6,11 @@ import re
 from typing import Any, Generic, Literal, TypeVar, cast
 
 import pystac
-from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.base import (
+    ExtensionManagementMixin,
+    PropertiesExtension,
+    SummariesExtension,
+)
 from pystac.extensions.hooks import ExtensionHooks
 
 #: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Collection`,
@@ -250,7 +254,8 @@ class EmbeddingsExtension(
         """Extends the given STAC Object with properties from the
         :stac-ext:`Embeddings Extension <embeddings>`.
 
-        This extension can be applied to instances of :class:`~pystac.Item`.
+        This extension can be applied to instances of :class:`~pystac.Item` or
+        :class:`~pystac.Collection`.
 
         Raises:
 
@@ -259,8 +264,19 @@ class EmbeddingsExtension(
         if isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(EmbeddingsExtension[T], ItemEmbeddingsExtension(obj))
+        elif isinstance(obj, pystac.Collection):
+            cls.ensure_has_extension(obj, add_if_missing)
+            return cast(EmbeddingsExtension[T], CollectionEmbeddingsExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
+
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> SummariesEmbeddingsExtension:
+        """Returns the extended summaries object for the given collection."""
+        cls.ensure_has_extension(obj, add_if_missing)
+        return SummariesEmbeddingsExtension(obj)
 
 
 class ItemEmbeddingsExtension(EmbeddingsExtension[pystac.Item]):
@@ -286,10 +302,131 @@ class ItemEmbeddingsExtension(EmbeddingsExtension[pystac.Item]):
         return f"<ItemEmbeddingsExtension Item id={self.item.id}>"
 
 
+class CollectionEmbeddingsExtension(EmbeddingsExtension[pystac.Collection]):
+    """A concrete implementation of :class:`EmbeddingsExtension` on a
+    :class:`~pystac.Collection` that extends the top-level fields of the Collection to
+    include properties defined in the :stac-ext:`Embeddings Extension <embeddings>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`EmbeddingsExtension.ext` on a :class:`~pystac.Collection` to extend it.
+    """
+
+    collection: pystac.Collection
+    """The :class:`~pystac.Collection` being extended."""
+
+    properties: dict[str, Any]
+    """The :class:`~pystac.Collection` extra fields, including extension properties."""
+
+    def __init__(self, collection: pystac.Collection) -> None:
+        self.collection = collection
+        self.properties = collection.extra_fields
+
+    def __repr__(self) -> str:
+        return f"<CollectionEmbeddingsExtension Collection id={self.collection.id}>"
+
+
+class SummariesEmbeddingsExtension(SummariesExtension):
+    """A concrete implementation of :class:`~pystac.extensions.base.SummariesExtension`
+    that extends the ``summaries`` field of a :class:`~pystac.Collection` to include
+    properties defined in the :stac-ext:`Embeddings Extension <embeddings>`.
+    """
+
+    @property
+    def emb_type(self) -> list[str] | None:
+        """Get or sets the summary of :attr:`EmbeddingsExtension.emb_type` values
+        for this Collection.
+        """
+        return self.summaries.get_list(TYPE_PROP)
+
+    @emb_type.setter
+    def emb_type(self, v: list[str] | None) -> None:
+        self._set_summary(TYPE_PROP, v)
+
+    @property
+    def dimensions(self) -> list[list[int]] | None:
+        """Get or sets the summary of :attr:`EmbeddingsExtension.dimensions` values
+        for this Collection.
+        """
+        return self.summaries.get_list(DIMENSIONS_PROP)
+
+    @dimensions.setter
+    def dimensions(self, v: list[list[int]] | None) -> None:
+        self._set_summary(DIMENSIONS_PROP, v)
+
+    @property
+    def chip_size(self) -> list[list[int]] | None:
+        """Get or sets the summary of :attr:`EmbeddingsExtension.chip_size` values
+        for this Collection.
+        """
+        return self.summaries.get_list(CHIP_SIZE_PROP)
+
+    @chip_size.setter
+    def chip_size(self, v: list[list[int]] | None) -> None:
+        self._set_summary(CHIP_SIZE_PROP, v)
+
+    @property
+    def stride(self) -> list[list[int]] | None:
+        """Get or sets the summary of :attr:`EmbeddingsExtension.stride` values
+        for this Collection.
+        """
+        return self.summaries.get_list(STRIDE_PROP)
+
+    @stride.setter
+    def stride(self, v: list[list[int]] | None) -> None:
+        self._set_summary(STRIDE_PROP, v)
+
+    @property
+    def grid_id(self) -> list[str] | None:
+        """Get or sets the summary of :attr:`EmbeddingsExtension.grid_id` values
+        for this Collection.
+        """
+        return self.summaries.get_list(GRID_ID_PROP)
+
+    @grid_id.setter
+    def grid_id(self, v: list[str] | None) -> None:
+        self._set_summary(GRID_ID_PROP, v)
+
+    @property
+    def temporal_period(self) -> list[str] | None:
+        """Get or sets the summary of :attr:`EmbeddingsExtension.temporal_period`
+        values for this Collection.
+        """
+        return self.summaries.get_list(TEMPORAL_PERIOD_PROP)
+
+    @temporal_period.setter
+    def temporal_period(self, v: list[str] | None) -> None:
+        self._set_summary(TEMPORAL_PERIOD_PROP, v)
+
+    @property
+    def quantization_method(self) -> list[str] | None:
+        """Get or sets the summary of :attr:`EmbeddingsExtension.quantization_method`
+        values for this Collection.
+        """
+        return self.summaries.get_list(QUANTIZATION_METHOD_PROP)
+
+    @quantization_method.setter
+    def quantization_method(self, v: list[str] | None) -> None:
+        self._set_summary(QUANTIZATION_METHOD_PROP, v)
+
+    @property
+    def original_data_type(self) -> list[str] | None:
+        """Get or sets the summary of :attr:`EmbeddingsExtension.original_data_type`
+        values for this Collection.
+        """
+        return self.summaries.get_list(ORIGINAL_DATA_TYPE_PROP)
+
+    @original_data_type.setter
+    def original_data_type(self, v: list[str] | None) -> None:
+        self._set_summary(ORIGINAL_DATA_TYPE_PROP, v)
+
+
 class EmbeddingsExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: set[str] = set()
-    stac_object_types = {pystac.STACObjectType.ITEM}
+    stac_object_types = {
+        pystac.STACObjectType.ITEM,
+        pystac.STACObjectType.COLLECTION,
+    }
 
 
 EMBEDDINGS_EXTENSION_HOOKS: ExtensionHooks = EmbeddingsExtensionHooks()

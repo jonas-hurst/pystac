@@ -1,11 +1,14 @@
 """Tests for pystac.extensions.embeddings."""
 
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 
 import pystac
 from pystac.extensions.embeddings import EmbeddingsExtension
+
+DATA_FILES = Path(__file__).resolve().parent / "data-files"
 
 TYPE_PROP = "emb:type"
 DIMENSIONS_PROP = "emb:dimensions"
@@ -177,3 +180,189 @@ def test_to_from_dict_optional_fields(item: pystac.Item) -> None:
     assert "P1Y" == item2.ext.embeddings.temporal_period
     assert "linear" == item2.ext.embeddings.quantization_method
     assert "float32" == item2.ext.embeddings.original_data_type
+
+
+@pytest.fixture
+def collection() -> pystac.Collection:
+    start = datetime(2023, 1, 1)
+    end = datetime(2023, 12, 31)
+    extent = pystac.Extent(
+        pystac.SpatialExtent([[-180.0, -60.0, 180.0, 84.0]]),
+        pystac.TemporalExtent([[start, end]]),
+    )
+    collection = pystac.Collection(
+        id="test-collection",
+        description="Test Collection",
+        extent=extent,
+    )
+    EmbeddingsExtension.add_to(collection)
+    return collection
+
+
+@pytest.fixture
+def example_collection() -> pystac.Collection:
+    return pystac.Collection.from_file(str(DATA_FILES / "collection.json"))
+
+
+def test_collection_ext_accessor(collection: pystac.Collection) -> None:
+    ext = collection.ext.embeddings
+    assert isinstance(ext, EmbeddingsExtension)
+
+
+def test_collection_emb_type(collection: pystac.Collection) -> None:
+    collection.ext.embeddings.emb_type = "chip"
+    assert "chip" == collection.ext.embeddings.emb_type
+    assert "chip" == collection.extra_fields[TYPE_PROP]
+
+
+def test_collection_dimensions(collection: pystac.Collection) -> None:
+    collection.ext.embeddings.emb_type = "chip"
+    collection.ext.embeddings.dimensions = [768]
+    assert [768] == collection.ext.embeddings.dimensions
+    assert [768] == collection.extra_fields[DIMENSIONS_PROP]
+
+
+def test_collection_chip_size(collection: pystac.Collection) -> None:
+    collection.ext.embeddings.emb_type = "chip"
+    collection.ext.embeddings.dimensions = [768]
+    collection.ext.embeddings.chip_size = [16, 16]
+    assert [16, 16] == collection.ext.embeddings.chip_size
+    assert [16, 16] == collection.extra_fields[CHIP_SIZE_PROP]
+
+
+def test_collection_stride(collection: pystac.Collection) -> None:
+    collection.ext.embeddings.emb_type = "chip"
+    collection.ext.embeddings.dimensions = [768]
+    collection.ext.embeddings.stride = [16, 16]
+    assert [16, 16] == collection.ext.embeddings.stride
+    assert [16, 16] == collection.extra_fields[STRIDE_PROP]
+
+
+def test_collection_grid_id(collection: pystac.Collection) -> None:
+    collection.ext.embeddings.emb_type = "chip"
+    collection.ext.embeddings.dimensions = [768]
+    collection.ext.embeddings.grid_id = "MAJORTOM"
+    assert "MAJORTOM" == collection.ext.embeddings.grid_id
+    assert "MAJORTOM" == collection.extra_fields[GRID_ID_PROP]
+
+
+def test_collection_temporal_period(collection: pystac.Collection) -> None:
+    collection.ext.embeddings.emb_type = "chip"
+    collection.ext.embeddings.dimensions = [768]
+    collection.ext.embeddings.temporal_period = "P1Y"
+    assert "P1Y" == collection.ext.embeddings.temporal_period
+    assert "P1Y" == collection.extra_fields[TEMPORAL_PERIOD_PROP]
+
+
+def test_collection_quantization_method(collection: pystac.Collection) -> None:
+    collection.ext.embeddings.emb_type = "chip"
+    collection.ext.embeddings.dimensions = [768]
+    collection.ext.embeddings.quantization_method = "linear"
+    assert "linear" == collection.ext.embeddings.quantization_method
+    assert "linear" == collection.extra_fields[QUANTIZATION_METHOD_PROP]
+
+
+def test_collection_original_data_type(collection: pystac.Collection) -> None:
+    collection.ext.embeddings.emb_type = "chip"
+    collection.ext.embeddings.dimensions = [768]
+    collection.ext.embeddings.original_data_type = "float32"
+    assert "float32" == collection.ext.embeddings.original_data_type
+    assert "float32" == collection.extra_fields[ORIGINAL_DATA_TYPE_PROP]
+
+
+def test_collection_invalid_emb_type(collection: pystac.Collection) -> None:
+    with pytest.raises(ValueError):
+        collection.ext.embeddings.emb_type = "not-a-valid-type"
+
+
+def test_collection_to_from_dict(collection: pystac.Collection) -> None:
+    collection.ext.embeddings.emb_type = "chip"
+    collection.ext.embeddings.dimensions = [768]
+    collection.ext.embeddings.chip_size = [16, 16]
+    collection.ext.embeddings.stride = [16, 16]
+    collection.ext.embeddings.grid_id = "MAJORTOM"
+    collection.ext.embeddings.temporal_period = "P1Y"
+    collection.ext.embeddings.quantization_method = "linear"
+    collection.ext.embeddings.original_data_type = "float32"
+
+    d = collection.to_dict()
+    assert "chip" == d[TYPE_PROP]
+    assert [768] == d[DIMENSIONS_PROP]
+    assert [16, 16] == d[CHIP_SIZE_PROP]
+    assert [16, 16] == d[STRIDE_PROP]
+    assert "MAJORTOM" == d[GRID_ID_PROP]
+    assert "P1Y" == d[TEMPORAL_PERIOD_PROP]
+    assert "linear" == d[QUANTIZATION_METHOD_PROP]
+    assert "float32" == d[ORIGINAL_DATA_TYPE_PROP]
+
+    collection2 = pystac.Collection.from_dict(d)
+    assert "chip" == collection2.ext.embeddings.emb_type
+    assert [768] == collection2.ext.embeddings.dimensions
+    assert [16, 16] == collection2.ext.embeddings.chip_size
+    assert [16, 16] == collection2.ext.embeddings.stride
+    assert "MAJORTOM" == collection2.ext.embeddings.grid_id
+    assert "P1Y" == collection2.ext.embeddings.temporal_period
+    assert "linear" == collection2.ext.embeddings.quantization_method
+    assert "float32" == collection2.ext.embeddings.original_data_type
+
+
+def test_example_collection_worked_example(
+    example_collection: pystac.Collection,
+) -> None:
+    ext = example_collection.ext.embeddings
+    assert "chip" == ext.emb_type
+    assert [768] == ext.dimensions
+    assert [16, 16] == ext.chip_size
+    assert [16, 16] == ext.stride
+    assert "MAJORTOM" == ext.grid_id
+
+
+def test_summaries(collection: pystac.Collection) -> None:
+    summaries = EmbeddingsExtension.summaries(collection)
+
+    # Get
+    assert summaries.emb_type is None
+    assert summaries.dimensions is None
+
+    # Set
+    summaries.emb_type = ["chip"]
+    summaries.dimensions = [[768]]
+    summaries.chip_size = [[16, 16]]
+    summaries.stride = [[16, 16]]
+    summaries.grid_id = ["MAJORTOM"]
+    summaries.temporal_period = ["P1Y"]
+    summaries.quantization_method = ["linear"]
+    summaries.original_data_type = ["float32"]
+
+    assert ["chip"] == summaries.emb_type
+    assert [[768]] == summaries.dimensions
+    assert [[16, 16]] == summaries.chip_size
+    assert [[16, 16]] == summaries.stride
+    assert ["MAJORTOM"] == summaries.grid_id
+    assert ["P1Y"] == summaries.temporal_period
+    assert ["linear"] == summaries.quantization_method
+    assert ["float32"] == summaries.original_data_type
+
+    d = collection.to_dict()
+    assert ["chip"] == d["summaries"][TYPE_PROP]
+    assert [[768]] == d["summaries"][DIMENSIONS_PROP]
+
+
+def test_summaries_example_collection(
+    example_collection: pystac.Collection,
+) -> None:
+    summaries = EmbeddingsExtension.summaries(example_collection)
+    assert ["chip"] == summaries.emb_type
+    assert [[768]] == summaries.dimensions
+
+
+def test_summaries_adds_uri(collection: pystac.Collection) -> None:
+    collection.stac_extensions = []
+    with pytest.raises(
+        pystac.ExtensionNotImplemented,
+        match="Extension 'embeddings' is not implemented",
+    ):
+        EmbeddingsExtension.summaries(collection, add_if_missing=False)
+
+    EmbeddingsExtension.summaries(collection, add_if_missing=True)
+    assert EmbeddingsExtension.get_schema_uri() in collection.stac_extensions

@@ -160,6 +160,10 @@ class CollectionExt(CatalogExt):
         return DatacubeExtension.ext(self.stac_object)
 
     @property
+    def embeddings(self) -> EmbeddingsExtension[Collection]:
+        return EmbeddingsExtension.ext(self.stac_object)
+
+    @property
     def item_assets(self) -> dict[str, ItemAssetDefinition]:
         return ItemAssetsExtension.ext(self.stac_object).item_assets
 
