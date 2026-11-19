@@ -15,7 +15,8 @@
 - Depends on: 1
 
 ## Slice 3: Collection top-level fields + summaries
-- [ ] Done
+- [x] Done
+- note: The spec's example `collection.json` fixture has a `root` link to `https://example.org/stac`, which does not resolve; calling `to_dict()` on a Collection loaded from this fixture raises `STACError` because PySTAC resolves the root link during serialization. This does not affect the slice's worked-example/summaries tests (they only read fields), but the fixture cannot be round-tripped via `to_dict()` without a resolvable root.
 - Delivers: `ext.embeddings` on a `Collection` reads/writes all 8 fields at top level; `EmbeddingsExtension.summaries(collection)` reads/writes them as collection summaries. Adds the spec's example Collection as a fixture and tests the worked-example values (`emb_type == "chip"`, `dimensions == [768]`, `chip_size == [16, 16]`, `stride == [16, 16]`, `grid_id == "MAJORTOM"`).
 - Check: `uv run pytest extensions/embeddings/tests`
 - Depends on: 2
