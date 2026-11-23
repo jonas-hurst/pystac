@@ -3,7 +3,7 @@ name = "pystac-ext-embeddings"
 description = "Embeddings extension for PySTAC"
 readme = "README.md"
 version = "1.0.0"
-authors = ["Jonas Hurst"]
+authors = []
 maintainers = []
 keywords = ["pystac", "embeddings", "catalog", "STAC", "emb"]
 license = { text = "Apache-2.0" }
