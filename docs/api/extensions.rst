@@ -15,6 +15,7 @@ pystac.extensions
 
     classification.ClassificationExtension
     datacube.DatacubeExtension
+    embeddings.EmbeddingsExtension
     eo.EOExtension
     file.FileExtension
     grid.GridExtension
