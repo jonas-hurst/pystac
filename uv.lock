@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = ">=3.10"
 resolution-markers = [
     "python_full_version >= '3.15' and sys_platform == 'win32'",
@@ -30,6 +30,7 @@ members = [
     "pystac-core",
     "pystac-ext-classification",
     "pystac-ext-datacube",
+    "pystac-ext-embeddings",
     "pystac-ext-eo",
     "pystac-ext-file",
     "pystac-ext-grid",
@@ -4537,6 +4538,7 @@ dependencies = [
     { name = "pystac-core" },
     { name = "pystac-ext-classification" },
     { name = "pystac-ext-datacube" },
+    { name = "pystac-ext-embeddings" },
     { name = "pystac-ext-eo" },
     { name = "pystac-ext-file" },
     { name = "pystac-ext-grid" },
@@ -4647,6 +4649,7 @@ requires-dist = [
     { name = "pystac-core", editable = "core" },
     { name = "pystac-ext-classification", editable = "extensions/classification" },
     { name = "pystac-ext-datacube", editable = "extensions/datacube" },
+    { name = "pystac-ext-embeddings", editable = "extensions/embeddings" },
     { name = "pystac-ext-eo", editable = "extensions/eo" },
     { name = "pystac-ext-file", editable = "extensions/file" },
     { name = "pystac-ext-grid", editable = "extensions/grid" },
@@ -4767,6 +4770,17 @@ requires-dist = [
 name = "pystac-ext-datacube"
 version = "2.2.2"
 source = { editable = "extensions/datacube" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-embeddings"
+version = "1.0.0"
+source = { editable = "extensions/embeddings" }
 dependencies = [
     { name = "pystac-core" },
 ]

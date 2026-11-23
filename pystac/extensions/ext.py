@@ -14,6 +14,7 @@ from pystac import (
 )
 from pystac.extensions.classification import ClassificationExtension
 from pystac.extensions.datacube import DatacubeExtension
+from pystac.extensions.embeddings import EmbeddingsExtension
 from pystac.extensions.eo import EOExtension
 from pystac.extensions.file import FileExtension
 from pystac.extensions.grid import GridExtension
@@ -48,6 +49,7 @@ U = TypeVar("U", Asset, ItemAssetDefinition)
 EXTENSION_NAMES = Literal[
     "classification",
     "cube",
+    "emb",
     "eo",
     "file",
     "grid",
@@ -72,6 +74,7 @@ EXTENSION_NAMES = Literal[
 EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     ClassificationExtension.name: ClassificationExtension,
     DatacubeExtension.name: DatacubeExtension,
+    EmbeddingsExtension.name: EmbeddingsExtension,
     EOExtension.name: EOExtension,
     FileExtension.name: FileExtension,
     GridExtension.name: GridExtension,
@@ -157,6 +160,10 @@ class CollectionExt(CatalogExt):
         return DatacubeExtension.ext(self.stac_object)
 
     @property
+    def emb(self) -> EmbeddingsExtension[Collection]:
+        return EmbeddingsExtension.ext(self.stac_object)
+
+    @property
     def item_assets(self) -> dict[str, ItemAssetDefinition]:
         return ItemAssetsExtension.ext(self.stac_object).item_assets
 
@@ -227,6 +234,10 @@ class ItemExt:
     @property
     def cube(self) -> DatacubeExtension[Item]:
         return DatacubeExtension.ext(self.stac_object)
+
+    @property
+    def emb(self) -> EmbeddingsExtension[Item]:
+        return EmbeddingsExtension.ext(self.stac_object)
 
     @property
     def eo(self) -> EOExtension[Item]:
@@ -354,6 +365,10 @@ class _AssetExt(_AssetsExt[U]):
     @property
     def cube(self) -> DatacubeExtension[U]:
         return DatacubeExtension.ext(self.stac_object)
+
+    @property
+    def emb(self) -> EmbeddingsExtension[U]:
+        return EmbeddingsExtension.ext(self.stac_object)
 
     @property
     def eo(self) -> EOExtension[U]:

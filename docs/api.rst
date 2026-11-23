@@ -105,6 +105,7 @@ PySTAC provides support for the following STAC Extensions:
 
 * :mod:`Datacube <pystac.extensions.datacube>`
 * :mod:`Electro-Optical <pystac.extensions.eo>`
+* :mod:`Embeddings <pystac.extensions.embeddings>`
 * :mod:`File Info <pystac.extensions.file>`
 * :mod:`Item Assets <pystac.extensions.item_assets>`
 * :mod:`MGRS <pystac.extensions.mgrs>`
