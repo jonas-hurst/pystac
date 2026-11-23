@@ -1,7 +1,7 @@
 # Plan
 
 ## Slice 5: Add the embeddings extension API reference page
-- [ ] Done
+- [x] Done
 - Delivers: New `docs/api/extensions/embeddings.rst` page documenting `pystac.extensions.embeddings`, in the same style as the other extension pages (`automodule` with `:members:` and `:undoc-members:`). The `:glob:` toctree in `docs/api/extensions.rst` picks it up, registering `EmbeddingsExtension` as a valid cross-reference target, so the four `py:class reference target not found: pystac.extensions.embeddings.EmbeddingsExtension` warnings disappear and the docs build passes with `-W --keep-going -n`.
 - Check: `uv run make -C docs html SPHINXOPTS="-W --keep-going -n"`
 - Depends on: none
