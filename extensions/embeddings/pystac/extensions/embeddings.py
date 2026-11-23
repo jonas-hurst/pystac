@@ -139,7 +139,7 @@ class EmbeddingsExtension(
        >>> emb_ext = EmbeddingsExtension.ext(item)
     """
 
-    name: Literal["embeddings"] = "embeddings"
+    name: Literal["emb"] = "emb"
 
     @property
     def emb_type(self) -> str | None:

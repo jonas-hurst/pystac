@@ -49,7 +49,7 @@ U = TypeVar("U", Asset, ItemAssetDefinition)
 EXTENSION_NAMES = Literal[
     "classification",
     "cube",
-    "embeddings",
+    "emb",
     "eo",
     "file",
     "grid",
@@ -160,7 +160,7 @@ class CollectionExt(CatalogExt):
         return DatacubeExtension.ext(self.stac_object)
 
     @property
-    def embeddings(self) -> EmbeddingsExtension[Collection]:
+    def emb(self) -> EmbeddingsExtension[Collection]:
         return EmbeddingsExtension.ext(self.stac_object)
 
     @property
@@ -236,7 +236,7 @@ class ItemExt:
         return DatacubeExtension.ext(self.stac_object)
 
     @property
-    def embeddings(self) -> EmbeddingsExtension[Item]:
+    def emb(self) -> EmbeddingsExtension[Item]:
         return EmbeddingsExtension.ext(self.stac_object)
 
     @property
@@ -367,7 +367,7 @@ class _AssetExt(_AssetsExt[U]):
         return DatacubeExtension.ext(self.stac_object)
 
     @property
-    def embeddings(self) -> EmbeddingsExtension[U]:
+    def emb(self) -> EmbeddingsExtension[U]:
         return EmbeddingsExtension.ext(self.stac_object)
 
     @property

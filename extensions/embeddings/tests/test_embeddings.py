@@ -40,130 +40,130 @@ def test_item_repr(item: pystac.Item) -> None:
 
 
 def test_ext_embeddings_accessor(item: pystac.Item) -> None:
-    ext = item.ext.embeddings
+    ext = item.ext.emb
     assert isinstance(ext, EmbeddingsExtension)
 
 
 def test_emb_type(item: pystac.Item) -> None:
-    item.ext.embeddings.emb_type = "chip"
-    item.ext.embeddings.dimensions = [768]
-    assert "chip" == item.ext.embeddings.emb_type
+    item.ext.emb.emb_type = "chip"
+    item.ext.emb.dimensions = [768]
+    assert "chip" == item.ext.emb.emb_type
     item.validate()
 
 
 def test_dimensions(item: pystac.Item) -> None:
-    item.ext.embeddings.emb_type = "chip"
-    item.ext.embeddings.dimensions = [768]
-    assert [768] == item.ext.embeddings.dimensions
+    item.ext.emb.emb_type = "chip"
+    item.ext.emb.dimensions = [768]
+    assert [768] == item.ext.emb.dimensions
     item.validate()
 
 
 def test_invalid_emb_type(item: pystac.Item) -> None:
     with pytest.raises(ValueError):
-        item.ext.embeddings.emb_type = "not-a-valid-type"
+        item.ext.emb.emb_type = "not-a-valid-type"
 
 
 def test_invalid_dimensions(item: pystac.Item) -> None:
     with pytest.raises(ValueError):
-        item.ext.embeddings.dimensions = [0]
+        item.ext.emb.dimensions = [0]
 
 
 def test_to_from_dict(item: pystac.Item) -> None:
-    item.ext.embeddings.emb_type = "chip"
-    item.ext.embeddings.dimensions = [768]
+    item.ext.emb.emb_type = "chip"
+    item.ext.emb.dimensions = [768]
 
     d = item.to_dict()
     assert "chip" == d["properties"][TYPE_PROP]
     assert [768] == d["properties"][DIMENSIONS_PROP]
 
     item2 = pystac.Item.from_dict(d)
-    assert "chip" == item2.ext.embeddings.emb_type
-    assert [768] == item2.ext.embeddings.dimensions
+    assert "chip" == item2.ext.emb.emb_type
+    assert [768] == item2.ext.emb.dimensions
 
 
 def test_chip_size(item: pystac.Item) -> None:
-    item.ext.embeddings.emb_type = "chip"
-    item.ext.embeddings.dimensions = [768]
-    item.ext.embeddings.chip_size = [16, 16]
-    assert [16, 16] == item.ext.embeddings.chip_size
+    item.ext.emb.emb_type = "chip"
+    item.ext.emb.dimensions = [768]
+    item.ext.emb.chip_size = [16, 16]
+    assert [16, 16] == item.ext.emb.chip_size
     item.validate()
 
 
 def test_stride(item: pystac.Item) -> None:
-    item.ext.embeddings.emb_type = "chip"
-    item.ext.embeddings.dimensions = [768]
-    item.ext.embeddings.stride = [16, 16]
-    assert [16, 16] == item.ext.embeddings.stride
+    item.ext.emb.emb_type = "chip"
+    item.ext.emb.dimensions = [768]
+    item.ext.emb.stride = [16, 16]
+    assert [16, 16] == item.ext.emb.stride
     item.validate()
 
 
 def test_grid_id(item: pystac.Item) -> None:
-    item.ext.embeddings.emb_type = "chip"
-    item.ext.embeddings.dimensions = [768]
-    item.ext.embeddings.grid_id = "MAJORTOM"
-    assert "MAJORTOM" == item.ext.embeddings.grid_id
+    item.ext.emb.emb_type = "chip"
+    item.ext.emb.dimensions = [768]
+    item.ext.emb.grid_id = "MAJORTOM"
+    assert "MAJORTOM" == item.ext.emb.grid_id
     item.validate()
 
 
 def test_temporal_period(item: pystac.Item) -> None:
-    item.ext.embeddings.emb_type = "chip"
-    item.ext.embeddings.dimensions = [768]
-    item.ext.embeddings.temporal_period = "P1Y"
-    assert "P1Y" == item.ext.embeddings.temporal_period
+    item.ext.emb.emb_type = "chip"
+    item.ext.emb.dimensions = [768]
+    item.ext.emb.temporal_period = "P1Y"
+    assert "P1Y" == item.ext.emb.temporal_period
     item.validate()
 
 
 def test_quantization_method(item: pystac.Item) -> None:
-    item.ext.embeddings.emb_type = "chip"
-    item.ext.embeddings.dimensions = [768]
-    item.ext.embeddings.quantization_method = "linear"
-    assert "linear" == item.ext.embeddings.quantization_method
+    item.ext.emb.emb_type = "chip"
+    item.ext.emb.dimensions = [768]
+    item.ext.emb.quantization_method = "linear"
+    assert "linear" == item.ext.emb.quantization_method
     item.validate()
 
 
 def test_original_data_type(item: pystac.Item) -> None:
-    item.ext.embeddings.emb_type = "chip"
-    item.ext.embeddings.dimensions = [768]
-    item.ext.embeddings.original_data_type = "float32"
-    assert "float32" == item.ext.embeddings.original_data_type
+    item.ext.emb.emb_type = "chip"
+    item.ext.emb.dimensions = [768]
+    item.ext.emb.original_data_type = "float32"
+    assert "float32" == item.ext.emb.original_data_type
     item.validate()
 
 
 def test_invalid_chip_size(item: pystac.Item) -> None:
     with pytest.raises(ValueError):
-        item.ext.embeddings.chip_size = [16]
+        item.ext.emb.chip_size = [16]
     with pytest.raises(ValueError):
-        item.ext.embeddings.chip_size = [0, 16]
+        item.ext.emb.chip_size = [0, 16]
     with pytest.raises(ValueError):
-        item.ext.embeddings.chip_size = [16, 16, 16]
+        item.ext.emb.chip_size = [16, 16, 16]
 
 
 def test_invalid_stride(item: pystac.Item) -> None:
     with pytest.raises(ValueError):
-        item.ext.embeddings.stride = [16]
+        item.ext.emb.stride = [16]
     with pytest.raises(ValueError):
-        item.ext.embeddings.stride = [-1, 16]
+        item.ext.emb.stride = [-1, 16]
 
 
 def test_invalid_original_data_type(item: pystac.Item) -> None:
     with pytest.raises(ValueError):
-        item.ext.embeddings.original_data_type = "not-a-data-type"
+        item.ext.emb.original_data_type = "not-a-data-type"
 
 
 def test_invalid_temporal_period(item: pystac.Item) -> None:
     with pytest.raises(ValueError):
-        item.ext.embeddings.temporal_period = "not-a-duration"
+        item.ext.emb.temporal_period = "not-a-duration"
 
 
 def test_to_from_dict_optional_fields(item: pystac.Item) -> None:
-    item.ext.embeddings.emb_type = "chip"
-    item.ext.embeddings.dimensions = [768]
-    item.ext.embeddings.chip_size = [16, 16]
-    item.ext.embeddings.stride = [16, 16]
-    item.ext.embeddings.grid_id = "MAJORTOM"
-    item.ext.embeddings.temporal_period = "P1Y"
-    item.ext.embeddings.quantization_method = "linear"
-    item.ext.embeddings.original_data_type = "float32"
+    item.ext.emb.emb_type = "chip"
+    item.ext.emb.dimensions = [768]
+    item.ext.emb.chip_size = [16, 16]
+    item.ext.emb.stride = [16, 16]
+    item.ext.emb.grid_id = "MAJORTOM"
+    item.ext.emb.temporal_period = "P1Y"
+    item.ext.emb.quantization_method = "linear"
+    item.ext.emb.original_data_type = "float32"
 
     d = item.to_dict()
     assert [16, 16] == d["properties"][CHIP_SIZE_PROP]
@@ -174,12 +174,12 @@ def test_to_from_dict_optional_fields(item: pystac.Item) -> None:
     assert "float32" == d["properties"][ORIGINAL_DATA_TYPE_PROP]
 
     item2 = pystac.Item.from_dict(d)
-    assert [16, 16] == item2.ext.embeddings.chip_size
-    assert [16, 16] == item2.ext.embeddings.stride
-    assert "MAJORTOM" == item2.ext.embeddings.grid_id
-    assert "P1Y" == item2.ext.embeddings.temporal_period
-    assert "linear" == item2.ext.embeddings.quantization_method
-    assert "float32" == item2.ext.embeddings.original_data_type
+    assert [16, 16] == item2.ext.emb.chip_size
+    assert [16, 16] == item2.ext.emb.stride
+    assert "MAJORTOM" == item2.ext.emb.grid_id
+    assert "P1Y" == item2.ext.emb.temporal_period
+    assert "linear" == item2.ext.emb.quantization_method
+    assert "float32" == item2.ext.emb.original_data_type
 
 
 @pytest.fixture
@@ -205,85 +205,85 @@ def example_collection() -> pystac.Collection:
 
 
 def test_collection_ext_accessor(collection: pystac.Collection) -> None:
-    ext = collection.ext.embeddings
+    ext = collection.ext.emb
     assert isinstance(ext, EmbeddingsExtension)
 
 
 def test_collection_emb_type(collection: pystac.Collection) -> None:
-    collection.ext.embeddings.emb_type = "chip"
-    assert "chip" == collection.ext.embeddings.emb_type
+    collection.ext.emb.emb_type = "chip"
+    assert "chip" == collection.ext.emb.emb_type
     assert "chip" == collection.extra_fields[TYPE_PROP]
 
 
 def test_collection_dimensions(collection: pystac.Collection) -> None:
-    collection.ext.embeddings.emb_type = "chip"
-    collection.ext.embeddings.dimensions = [768]
-    assert [768] == collection.ext.embeddings.dimensions
+    collection.ext.emb.emb_type = "chip"
+    collection.ext.emb.dimensions = [768]
+    assert [768] == collection.ext.emb.dimensions
     assert [768] == collection.extra_fields[DIMENSIONS_PROP]
 
 
 def test_collection_chip_size(collection: pystac.Collection) -> None:
-    collection.ext.embeddings.emb_type = "chip"
-    collection.ext.embeddings.dimensions = [768]
-    collection.ext.embeddings.chip_size = [16, 16]
-    assert [16, 16] == collection.ext.embeddings.chip_size
+    collection.ext.emb.emb_type = "chip"
+    collection.ext.emb.dimensions = [768]
+    collection.ext.emb.chip_size = [16, 16]
+    assert [16, 16] == collection.ext.emb.chip_size
     assert [16, 16] == collection.extra_fields[CHIP_SIZE_PROP]
 
 
 def test_collection_stride(collection: pystac.Collection) -> None:
-    collection.ext.embeddings.emb_type = "chip"
-    collection.ext.embeddings.dimensions = [768]
-    collection.ext.embeddings.stride = [16, 16]
-    assert [16, 16] == collection.ext.embeddings.stride
+    collection.ext.emb.emb_type = "chip"
+    collection.ext.emb.dimensions = [768]
+    collection.ext.emb.stride = [16, 16]
+    assert [16, 16] == collection.ext.emb.stride
     assert [16, 16] == collection.extra_fields[STRIDE_PROP]
 
 
 def test_collection_grid_id(collection: pystac.Collection) -> None:
-    collection.ext.embeddings.emb_type = "chip"
-    collection.ext.embeddings.dimensions = [768]
-    collection.ext.embeddings.grid_id = "MAJORTOM"
-    assert "MAJORTOM" == collection.ext.embeddings.grid_id
+    collection.ext.emb.emb_type = "chip"
+    collection.ext.emb.dimensions = [768]
+    collection.ext.emb.grid_id = "MAJORTOM"
+    assert "MAJORTOM" == collection.ext.emb.grid_id
     assert "MAJORTOM" == collection.extra_fields[GRID_ID_PROP]
 
 
 def test_collection_temporal_period(collection: pystac.Collection) -> None:
-    collection.ext.embeddings.emb_type = "chip"
-    collection.ext.embeddings.dimensions = [768]
-    collection.ext.embeddings.temporal_period = "P1Y"
-    assert "P1Y" == collection.ext.embeddings.temporal_period
+    collection.ext.emb.emb_type = "chip"
+    collection.ext.emb.dimensions = [768]
+    collection.ext.emb.temporal_period = "P1Y"
+    assert "P1Y" == collection.ext.emb.temporal_period
     assert "P1Y" == collection.extra_fields[TEMPORAL_PERIOD_PROP]
 
 
 def test_collection_quantization_method(collection: pystac.Collection) -> None:
-    collection.ext.embeddings.emb_type = "chip"
-    collection.ext.embeddings.dimensions = [768]
-    collection.ext.embeddings.quantization_method = "linear"
-    assert "linear" == collection.ext.embeddings.quantization_method
+    collection.ext.emb.emb_type = "chip"
+    collection.ext.emb.dimensions = [768]
+    collection.ext.emb.quantization_method = "linear"
+    assert "linear" == collection.ext.emb.quantization_method
     assert "linear" == collection.extra_fields[QUANTIZATION_METHOD_PROP]
 
 
 def test_collection_original_data_type(collection: pystac.Collection) -> None:
-    collection.ext.embeddings.emb_type = "chip"
-    collection.ext.embeddings.dimensions = [768]
-    collection.ext.embeddings.original_data_type = "float32"
-    assert "float32" == collection.ext.embeddings.original_data_type
+    collection.ext.emb.emb_type = "chip"
+    collection.ext.emb.dimensions = [768]
+    collection.ext.emb.original_data_type = "float32"
+    assert "float32" == collection.ext.emb.original_data_type
     assert "float32" == collection.extra_fields[ORIGINAL_DATA_TYPE_PROP]
 
 
 def test_collection_invalid_emb_type(collection: pystac.Collection) -> None:
     with pytest.raises(ValueError):
-        collection.ext.embeddings.emb_type = "not-a-valid-type"
+        collection.ext.emb.emb_type = "not-a-valid-type"
 
 
 def test_collection_to_from_dict(collection: pystac.Collection) -> None:
-    collection.ext.embeddings.emb_type = "chip"
-    collection.ext.embeddings.dimensions = [768]
-    collection.ext.embeddings.chip_size = [16, 16]
-    collection.ext.embeddings.stride = [16, 16]
-    collection.ext.embeddings.grid_id = "MAJORTOM"
-    collection.ext.embeddings.temporal_period = "P1Y"
-    collection.ext.embeddings.quantization_method = "linear"
-    collection.ext.embeddings.original_data_type = "float32"
+    collection.ext.emb.emb_type = "chip"
+    collection.ext.emb.dimensions = [768]
+    collection.ext.emb.chip_size = [16, 16]
+    collection.ext.emb.stride = [16, 16]
+    collection.ext.emb.grid_id = "MAJORTOM"
+    collection.ext.emb.temporal_period = "P1Y"
+    collection.ext.emb.quantization_method = "linear"
+    collection.ext.emb.original_data_type = "float32"
 
     d = collection.to_dict()
     assert "chip" == d[TYPE_PROP]
@@ -296,20 +296,20 @@ def test_collection_to_from_dict(collection: pystac.Collection) -> None:
     assert "float32" == d[ORIGINAL_DATA_TYPE_PROP]
 
     collection2 = pystac.Collection.from_dict(d)
-    assert "chip" == collection2.ext.embeddings.emb_type
-    assert [768] == collection2.ext.embeddings.dimensions
-    assert [16, 16] == collection2.ext.embeddings.chip_size
-    assert [16, 16] == collection2.ext.embeddings.stride
-    assert "MAJORTOM" == collection2.ext.embeddings.grid_id
-    assert "P1Y" == collection2.ext.embeddings.temporal_period
-    assert "linear" == collection2.ext.embeddings.quantization_method
-    assert "float32" == collection2.ext.embeddings.original_data_type
+    assert "chip" == collection2.ext.emb.emb_type
+    assert [768] == collection2.ext.emb.dimensions
+    assert [16, 16] == collection2.ext.emb.chip_size
+    assert [16, 16] == collection2.ext.emb.stride
+    assert "MAJORTOM" == collection2.ext.emb.grid_id
+    assert "P1Y" == collection2.ext.emb.temporal_period
+    assert "linear" == collection2.ext.emb.quantization_method
+    assert "float32" == collection2.ext.emb.original_data_type
 
 
 def test_example_collection_worked_example(
     example_collection: pystac.Collection,
 ) -> None:
-    ext = example_collection.ext.embeddings
+    ext = example_collection.ext.emb
     assert "chip" == ext.emb_type
     assert [768] == ext.dimensions
     assert [16, 16] == ext.chip_size
@@ -360,7 +360,7 @@ def test_summaries_adds_uri(collection: pystac.Collection) -> None:
     collection.stac_extensions = []
     with pytest.raises(
         pystac.ExtensionNotImplemented,
-        match="Extension 'embeddings' is not implemented",
+        match="Extension 'emb' is not implemented",
     ):
         EmbeddingsExtension.summaries(collection, add_if_missing=False)
 
@@ -399,13 +399,13 @@ def item_asset_defn() -> pystac.ItemAssetDefinition:
 
 
 def test_asset_ext_accessor(item_with_asset: pystac.Item) -> None:
-    ext = item_with_asset.assets["embeddings"].ext.embeddings
+    ext = item_with_asset.assets["embeddings"].ext.emb
     assert isinstance(ext, EmbeddingsExtension)
 
 
 def test_asset_all_fields(item_with_asset: pystac.Item) -> None:
     asset = item_with_asset.assets["embeddings"]
-    ext = asset.ext.embeddings
+    ext = asset.ext.emb
 
     ext.emb_type = "chip"
     ext.dimensions = [768]
@@ -438,13 +438,13 @@ def test_asset_all_fields(item_with_asset: pystac.Item) -> None:
 def test_asset_invalid_emb_type(item_with_asset: pystac.Item) -> None:
     asset = item_with_asset.assets["embeddings"]
     with pytest.raises(ValueError):
-        asset.ext.embeddings.emb_type = "not-a-valid-type"
+        asset.ext.emb.emb_type = "not-a-valid-type"
 
 
 def test_asset_to_from_dict(item_with_asset: pystac.Item) -> None:
     asset = item_with_asset.assets["embeddings"]
-    asset.ext.embeddings.emb_type = "chip"
-    asset.ext.embeddings.dimensions = [768]
+    asset.ext.emb.emb_type = "chip"
+    asset.ext.emb.dimensions = [768]
 
     d = item_with_asset.to_dict()
     asset_dict = d["assets"]["embeddings"]
@@ -453,21 +453,21 @@ def test_asset_to_from_dict(item_with_asset: pystac.Item) -> None:
 
     item2 = pystac.Item.from_dict(d)
     asset2 = item2.assets["embeddings"]
-    assert "chip" == asset2.ext.embeddings.emb_type
-    assert [768] == asset2.ext.embeddings.dimensions
+    assert "chip" == asset2.ext.emb.emb_type
+    assert [768] == asset2.ext.emb.dimensions
 
 
 def test_item_asset_definition_ext_accessor(
     item_asset_defn: pystac.ItemAssetDefinition,
 ) -> None:
-    ext = item_asset_defn.ext.embeddings
+    ext = item_asset_defn.ext.emb
     assert isinstance(ext, EmbeddingsExtension)
 
 
 def test_item_asset_definition_all_fields(
     item_asset_defn: pystac.ItemAssetDefinition,
 ) -> None:
-    ext = item_asset_defn.ext.embeddings
+    ext = item_asset_defn.ext.emb
 
     ext.emb_type = "chip"
     ext.dimensions = [768]
@@ -499,6 +499,6 @@ def test_item_asset_definition_all_fields(
 
 def test_example_item_asset_worked_example(example_item: pystac.Item) -> None:
     asset = example_item.assets["embeddings"]
-    ext = asset.ext.embeddings
+    ext = asset.ext.emb
     assert "chip" == ext.emb_type
     assert [768] == ext.dimensions
