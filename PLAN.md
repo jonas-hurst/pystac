@@ -15,7 +15,9 @@
   - note: A test file `tests/test_docs_extensions.py` was added beyond what the slice requested. It passes and verifies the slice's behaviour (the entry is present in the autosummary), so it is a reasonable, non-blocking addition.
 
 ## Slice 7: List the embeddings extension in the API reference index
-- [ ] Done
+- [x] Done
 - Delivers: The embeddings extension added to the Extensions list in `docs/api.rst`, so it appears in the narrative Extensions section of the API reference index.
 - Check: `uv run make -C docs html SPHINXOPTS="-W --keep-going -n"`
 - Depends on: 5
+- Notes:
+  - note: The commit also extends `tests/test_docs_extensions.py` with `test_embeddings_extension_is_in_api_index_extensions` and helpers. This goes beyond the slice's deliverable, but it checks real behaviour (it fails if the `api.rst` entry is removed), so it is a reasonable, non-blocking addition.
