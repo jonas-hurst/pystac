@@ -7,10 +7,12 @@
 - Depends on: none
 
 ## Slice 6: Register the embeddings class in the extensions autosummary
-- [ ] Done
+- [x] Done
 - Delivers: `embeddings.EmbeddingsExtension` added to the autosummary in `docs/api/extensions.rst`, so it appears in the extensions index table alongside the other extension classes.
 - Check: `uv run make -C docs html SPHINXOPTS="-W --keep-going -n"`
 - Depends on: 5
+- Notes:
+  - note: A test file `tests/test_docs_extensions.py` was added beyond what the slice requested. It passes and verifies the slice's behaviour (the entry is present in the autosummary), so it is a reasonable, non-blocking addition.
 
 ## Slice 7: List the embeddings extension in the API reference index
 - [ ] Done
